@@ -37,7 +37,7 @@ MODEL_LIST *create_model_list(const char *base_filename, const int model_count) 
 }
 
 
-PLAYER *create_player(const char *char_name) {
+PLAYER *create_player(const char *char_name, META_STATS* meta_stats) {
 
 	PLAYER *player = calloc(1, sizeof(PLAYER));
 
@@ -64,7 +64,7 @@ PLAYER *create_player(const char *char_name) {
 		player->got_hit_left = create_model_list("../res/piccolo/got_hitl", 1);
 
 
-		player->health = 100;
+		player->health = 25 + meta_stats->level*25;
 		player->position.x = 500;
 		player->position.y = 310;
 		player->position.h = 150;
@@ -106,7 +106,7 @@ PLAYER *create_player(const char *char_name) {
 		player->got_hit_left = create_model_list("../res/piccolo/got_hitl", 1);
 
 
-		player->health = 100;
+		player->health = 25 + meta_stats->level*25;
 		player->position.x = 100;
 		player->position.y = 310;
 		player->position.h = 150;
@@ -166,6 +166,8 @@ void init_static_models(STATIC_MODELS *static_models, SDL_Surface* display) {
 	static_models->health_bar.h = 23;
 	
 	static_models->health_bar_color = SDL_MapRGB(display->format, 237, 27, 36);
+	
+	static_models->health_bar_max_width = 294;
 
 }
 
@@ -244,5 +246,13 @@ void init_game_timer(GAME_TIMER* timer) {
 	timer->enemy_spawn_timer = 200;
 	timer->counter = 0;
 	
+}
+
+
+void init_meta_stats(META_STATS* meta_stats) {
+	
+	//read file here
+	meta_stats->experience = 0;
+	meta_stats->level = 1;
 }
 

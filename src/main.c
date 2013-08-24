@@ -25,7 +25,10 @@ int WinMain(int argc, char** argv) {
 	GAME_TIMER* timer = calloc(1, sizeof(GAME_TIMER));
 	init_game_timer(timer);
 	
-	PLAYER* player = create_player("piccolo");
+	META_STATS* meta_stats = calloc(1, sizeof(META_STATS));
+	init_meta_stats(meta_stats);
+	
+	PLAYER* player = create_player("piccolo", meta_stats);
 	GAME_VARIABLES* game_variables = calloc(1, sizeof(GAME_VARIABLES));
 	init_game_variables(game_variables, "piccolo");
 	
@@ -62,7 +65,8 @@ int WinMain(int argc, char** argv) {
 		draw_model(player->current_model, player->position, display);
 		draw_enemies(enemies, display);
 		draw_effects(effects, display);
-		draw_health_bar(player, static_models, display);
+		draw_health_bar(player, static_models, meta_stats, display);
+		
 		
 		SDL_Flip(display);
 		SDL_Delay(10);

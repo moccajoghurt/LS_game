@@ -62,6 +62,8 @@ typedef struct STATIC_MODELS {
 	SDL_Rect health_bar;
 	
 	Uint32 health_bar_color;
+	
+	int health_bar_max_width;
 
 
 } STATIC_MODELS;
@@ -194,8 +196,6 @@ typedef struct META_STATS {
 	
 	int experience;
 	int level;
-	
-	
 	
 	
 } META_STATS;

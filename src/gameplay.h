@@ -269,8 +269,9 @@ void check_melee_attack_collision(GAME_VARIABLES *game_variables, PLAYER* player
 				if (detect_rect_collision(&enemies->object->position, &player->position)) {
 					
 					if (detect_pixel_collision(enemies->object->current_model, player->current_model, &enemies->object->position, &player->position)) {
-						enemies->object->is_alive = 0;
-						enemies->object->is_targetable = 0;
+						enemies->object->health -= 50;
+						if (enemies->object->health <= 0)
+							enemies->object->death_type = 0;
 					}
 				}
 			}
@@ -1064,6 +1065,8 @@ void create_enemy(SDL_Rect pos, const char* enemy_name, CURRENT_ENEMIES* enemies
 		enemies->object->is_alive = 1;
 		enemies->object->death_type = 1;
 		
+		enemies->object->health = 50;
+		
 	}
 	
 	enemies->object->position.w = enemies->object->current_model->w;
@@ -1157,7 +1160,9 @@ void handle_enemy_death(CURRENT_ENEMIES* enemies) {
 	
 	
 	while (enemies->next != NULL) {
-		if (enemies->object->is_alive == 0) {
+		if (enemies->object->health <= 0) {
+			enemies->object->is_targetable = 0;
+			enemies->object->is_alive = 0;
 			enemies->object->death_count += 1;
 			if (enemies->object->death_count == enemies->object->death_intervall) {
 				
@@ -1313,23 +1318,18 @@ void check_spell_collisions(CURRENT_EFFECTS* effects, CURRENT_ENEMIES* enemies, 
 						if (detect_pixel_collision(enemies->object->current_model, effects->object->model, &enemies->object->position, &effects->object->position)) {
 							
 							if (strcmp(effects->object->effect_name, "eb0") == 0 || strcmp(effects->object->effect_name, "eb1") == 0 || strcmp(effects->object->effect_name, "ebl1") == 0) {
-								enemies->object->health -= 50;
+								enemies->object->health -= 25;
 								create_effect(effects, effects->object->position, 0, 0, "enemy", 0, 0, "small_exp", NULL, game_models, 3, 0);
 								remove_effect_by_id(effects, effects->id);
 							
-								if (enemies->object->health <= 0) {
-									enemies->object->is_alive = 0;
-									enemies->object->is_targetable = 0;
-								}
 								
 								break;
 							}
 							
 							if (strcmp(effects->object->effect_name, "fod") == 0) {
-								
-								enemies->object->is_alive = 0;
-								enemies->object->is_targetable = 0;
-								enemies->object->death_type = 2;
+								enemies->object->health -= 50;
+								if(enemies->object->health <= 0)
+									enemies->object->death_type = 2;
 								remove_effect_by_id(effects, effects->id);
 								break;
 							}
@@ -1391,8 +1391,23 @@ void handle_anim_effects(CURRENT_EFFECTS *effects) {
 }
 
 
-void draw_health_bar(PLAYER* player, STATIC_MODELS* static_models, SDL_Surface *display) {
+void draw_health_bar(PLAYER* player, STATIC_MODELS* static_models, META_STATS* meta_stats, SDL_Surface *display) {
 	SDL_BlitSurface(static_models->health_bar_frame, NULL, display, &static_models->health_bar_frame_pos);
+	
+	
+	int health_percentage = (player->health * 100) / (25 + meta_stats->level*25);
+	int progress_bar_percentage = (static_models->health_bar.w*100) / static_models->health_bar_max_width;
+	
+	if (health_percentage < progress_bar_percentage) {
+		
+		if (static_models->health_bar.w - 2 < 0) {
+			static_models->health_bar.w = 0;
+			//end
+		} else {
+			static_models->health_bar.w -= 2;
+		}
+	}
+	
 	
 	SDL_FillRect(display, &static_models->health_bar, static_models->health_bar_color);
 	
