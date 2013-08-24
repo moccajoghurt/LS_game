@@ -1,1 +1,0 @@
-gcc test.c -o test `pkg-config --libs --cflags sdl` -lm -ldl
