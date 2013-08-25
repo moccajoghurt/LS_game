@@ -1067,6 +1067,9 @@ void create_enemy(SDL_Rect pos, const char* enemy_name, CURRENT_ENEMIES* enemies
 		
 		enemies->object->health = 50;
 		
+		enemies->object->name = calloc(1, strlen("mummy") + 1);
+		strcpy(enemies->object->name, "mummy");
+		
 	}
 	
 	enemies->object->position.w = enemies->object->current_model->w;
@@ -1237,62 +1240,63 @@ void handle_enemy_attack(CURRENT_ENEMIES* enemies, PLAYER *player, CURRENT_EFFEC
 	
 	while (enemies->next != NULL) {
 		
-		int distance = enemies->object->position.x - player->position.x;
-		distance = distance < 0 ? -distance + 50 : distance;
-		
-		if (distance < 150 && enemies->object->is_attacking == 0 && enemies->object->is_alive) {
-			enemies->object->is_attacking = 1;
+		if (strcmp(enemies->object->name, "mummy") == 0) {
+			int distance = enemies->object->position.x - player->position.x;
+			distance = distance < 0 ? -distance + 50 : distance;
 			
-			if (enemies->object->position.x < player->position.x) {
-				enemies->object->direction_left = 0;
-				SDL_Rect pos = enemies->object->position;
-				pos.x += 60;
-				create_effect(effects, pos, 0, 0, "player", 0, 0, "mummy_breath", NULL, game_models, 3, 0);
+			if (distance < 150 && enemies->object->is_attacking == 0 && enemies->object->is_alive) {
+				enemies->object->is_attacking = 1;
 				
-			} else {
-				enemies->object->direction_left = 1;
-				SDL_Rect pos = enemies->object->position;
-				pos.x -= 100;
-				create_effect(effects, pos, 0, 0, "player", 0, 0, "mummy_breath_left", NULL, game_models, 3, 0);
-			}
-		
-		} else if (enemies->object->is_attacking == 1 && enemies->object->is_alive) {
-			
-			enemies->object->attack_count += 1;
-			
-			if (enemies->object->attack_count == enemies->object->attack_intervall) {
-				
-				enemies->object->attack_count = 0;
-			
-				if (enemies->object->direction_left == 0) {
-					
-					if (enemies->object->attack->next->model == NULL) {
-						enemies->object->attack = enemies->object->attack->first;
-						enemies->object->is_attacking = 0;
-						
-					} else {
-						enemies->object->attack = enemies->object->attack->next;
-						enemies->object->current_model = enemies->object->attack->model;
-					}
+				if (enemies->object->position.x < player->position.x) {
+					enemies->object->direction_left = 0;
+					SDL_Rect pos = enemies->object->position;
+					pos.x += 60;
+					create_effect(effects, pos, 0, 0, "player", 0, 0, "mummy_breath", NULL, game_models, 3, 0);
 					
 				} else {
+					enemies->object->direction_left = 1;
+					SDL_Rect pos = enemies->object->position;
+					pos.x -= 100;
+					create_effect(effects, pos, 0, 0, "player", 0, 0, "mummy_breath_left", NULL, game_models, 3, 0);
+				}
+			
+			} else if (enemies->object->is_attacking == 1 && enemies->object->is_alive) {
+				
+				enemies->object->attack_count += 1;
+				
+				if (enemies->object->attack_count == enemies->object->attack_intervall) {
 					
-					if (enemies->object->attack_left->next->model == NULL) {
-						enemies->object->attack_left = enemies->object->attack_left->first;
-						enemies->object->is_attacking = 0;
+					enemies->object->attack_count = 0;
+				
+					if (enemies->object->direction_left == 0) {
+						
+						if (enemies->object->attack->next->model == NULL) {
+							enemies->object->attack = enemies->object->attack->first;
+							enemies->object->is_attacking = 0;
+							
+						} else {
+							enemies->object->attack = enemies->object->attack->next;
+							enemies->object->current_model = enemies->object->attack->model;
+						}
 						
 					} else {
-						enemies->object->attack_left = enemies->object->attack_left->next;
-						enemies->object->current_model = enemies->object->attack_left->model;
+						
+						if (enemies->object->attack_left->next->model == NULL) {
+							enemies->object->attack_left = enemies->object->attack_left->first;
+							enemies->object->is_attacking = 0;
+							
+						} else {
+							enemies->object->attack_left = enemies->object->attack_left->next;
+							enemies->object->current_model = enemies->object->attack_left->model;
+						}
+						
 					}
-					
 				}
+				
+				
+				
 			}
-			
-			
-			
 		}
-		
 		enemies = enemies->next;
 	}
 	
@@ -1350,9 +1354,41 @@ void check_spell_collisions(CURRENT_EFFECTS* effects, CURRENT_ENEMIES* enemies, 
 		else
 			break;
 	}
-	
-	
 }
+
+
+
+void check_enemy_effects_collision(PLAYER* player, CURRENT_EFFECTS* effects) {
+	
+	if (player->harm_cd == 0) {
+		while (effects->next != NULL) {
+			
+			if (detect_rect_collision(&player->position, &effects->object->position)) {
+				
+				if (detect_pixel_collision(player->current_model, effects->object->model, &player->position, &effects->object->position)) {
+					player->harm_cd = 100;
+					
+					if (strstr(effects->object->effect_name, "mummy_breath") != NULL) {
+						player->health -= 10;
+					}
+				}
+				
+			}
+			
+			
+			
+			if (effects->next != NULL)
+				effects = effects->next;
+			else
+				break;
+		}
+		
+	} else {
+		player->harm_cd -= 1;
+	}
+}
+
+
 
 void draw_model(SDL_Surface *model, SDL_Rect pos, SDL_Surface *display) {
 	SDL_BlitSurface(model, NULL, display, &pos);

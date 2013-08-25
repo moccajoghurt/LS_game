@@ -61,6 +61,7 @@ int WinMain(int argc, char** argv) {
 		handle_enemy_attack(enemies, player, effects, effect_models, game_models);
 		check_melee_attack_collision(game_variables, player, enemies);
 		check_spell_collisions(effects, enemies, player, game_models, effect_models);
+		check_enemy_effects_collision(player, effects);
 		handle_enemy_death(enemies);
 		draw_model(player->current_model, player->position, display);
 		draw_enemies(enemies, display);

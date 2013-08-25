@@ -79,6 +79,8 @@ PLAYER *create_player(const char *char_name, META_STATS* meta_stats) {
 
 		player->spell_timer_count = 0;
 		
+		player->harm_cd = 0;
+		
 		player->name = calloc(1, strlen("piccolo") + 1);
 		strcpy(player->name, "piccolo");
 
@@ -120,6 +122,8 @@ PLAYER *create_player(const char *char_name, META_STATS* meta_stats) {
 		player->direction_left = 0;
 
 		player->spell_timer_count = 0;
+		
+		player->harm_cd = 0;
 		
 		player->name = calloc(1, strlen("warlock") + 1);
 		strcpy(player->name, "warlock");

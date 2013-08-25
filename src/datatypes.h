@@ -95,6 +95,8 @@ typedef struct ENEMY {
 	STATE is_attacking;
 	int death_type;
 	
+	char* name;
+	
 
 } ENEMY;
 
@@ -140,6 +142,8 @@ typedef struct PLAYER {
 	int walk_count;
 
 	STATE direction_left;
+	
+	int harm_cd;
 	
 	char* name;
 
