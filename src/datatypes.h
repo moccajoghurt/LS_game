@@ -201,6 +201,9 @@ typedef struct META_STATS {
 	int experience;
 	int level;
 	
+	int current_stage;
+	int **enemies_per_stage;
+	
 	
 } META_STATS;
 

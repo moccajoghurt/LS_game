@@ -1070,6 +1070,49 @@ void create_enemy(SDL_Rect pos, const char* enemy_name, CURRENT_ENEMIES* enemies
 		enemies->object->name = calloc(1, strlen("mummy") + 1);
 		strcpy(enemies->object->name, "mummy");
 		
+	} else if (strcmp(enemy_name, "arab") == 0) {
+		
+		enemies->object = calloc(1, sizeof(ENEMY));
+		
+		enemies->object->walk_right = get_game_model_list(model_lists, "arab_walk");
+		enemies->object->walk_left = get_game_model_list(model_lists, "arab_walk_left");
+		enemies->object->attack = get_game_model_list(model_lists, "arab_atk");
+		enemies->object->attack_left = get_game_model_list(model_lists, "arab_atk_left");
+		enemies->object->death_1 = get_game_model_list(model_lists, "arab_death");
+		enemies->object->death_1_left = get_game_model_list(model_lists, "arab_death");
+		enemies->object->death_2 = get_game_model_list(model_lists, "arab_death");
+		enemies->object->death_2_left = get_game_model_list(model_lists, "arab_death");
+		
+		
+		enemies->object->walk_intervall = 5;
+		enemies->object->walk_count = 0;
+		
+		enemies->object->death_intervall = 7;
+		enemies->object->death_count = 0;
+		
+		enemies->object->attack_intervall = 3;
+		enemies->object->attack_count = 0;
+		
+		enemies->object->position = pos;
+		
+		if (pos.x < player->position.x) {
+			enemies->object->direction_left = 1;
+			enemies->object->current_model = enemies->object->walk_right->model;
+		} else {
+			enemies->object->direction_left = 0;
+			enemies->object->current_model = enemies->object->walk_left->model;
+		}
+		
+		enemies->object->is_targetable = 1;
+		enemies->object->is_attacking = 0;
+		enemies->object->is_alive = 1;
+		enemies->object->death_type = 1;
+		
+		enemies->object->health = 50;
+		
+		enemies->object->name = calloc(1, strlen("arab") + 1);
+		strcpy(enemies->object->name, "arab");
+		
 	}
 	
 	enemies->object->position.w = enemies->object->current_model->w;
@@ -1095,7 +1138,7 @@ void enemy_creation(GAME_TIMER* timer, CURRENT_ENEMIES* enemies, GAME_MODEL_LIST
 		SDL_Rect pos;
 		pos.x = 1300;
 		pos.y = 350;
-		create_enemy(pos, "mummy", enemies, model_lists, player);
+		create_enemy(pos, "arab", enemies, model_lists, player);
 		
 	}
 	
@@ -1325,7 +1368,6 @@ void check_spell_collisions(CURRENT_EFFECTS* effects, CURRENT_ENEMIES* enemies, 
 								enemies->object->health -= 25;
 								create_effect(effects, effects->object->position, 0, 0, "enemy", 0, 0, "small_exp", NULL, game_models, 3, 0);
 								remove_effect_by_id(effects, effects->id);
-							
 								
 								break;
 							}
@@ -1374,7 +1416,6 @@ void check_enemy_effects_collision(PLAYER* player, CURRENT_EFFECTS* effects) {
 				}
 				
 			}
-			
 			
 			
 			if (effects->next != NULL)

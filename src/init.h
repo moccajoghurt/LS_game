@@ -228,8 +228,11 @@ void add_game_model_list(GAME_MODEL_LISTS *game_models, const char *filename, in
 
 void init_game_model_lists(GAME_MODEL_LISTS *game_models) {
 	
+	//explosions
 	add_game_model_list(game_models, "../res/explosions/exp", 26, "exp");
 	add_game_model_list(game_models, "../res/explosions/small_exp", 6, "small_exp");
+	
+	//mummy
 	add_game_model_list(game_models, "../res/mummy/attack", 28, "mummy_atk");
 	add_game_model_list(game_models, "../res/mummy/attackl", 28, "mummy_atk_left");
 	add_game_model_list(game_models, "../res/mummy/breath", 16, "mummy_breath");
@@ -242,6 +245,13 @@ void init_game_model_lists(GAME_MODEL_LISTS *game_models) {
 	add_game_model_list(game_models, "../res/mummy/walkl", 18, "mummy_walk_left");
 	add_game_model_list(game_models, "../res/mummy/breath", 16, "mummy_breath");
 	add_game_model_list(game_models, "../res/mummy/breathl", 16, "mummy_breath_left");
+	
+	//arab
+	add_game_model_list(game_models, "../res/arab/attack", 14, "arab_atk");
+	add_game_model_list(game_models, "../res/arab/attackl", 14, "arab_atk_left");
+	add_game_model_list(game_models, "../res/arab/death", 10, "arab_death");
+	add_game_model_list(game_models, "../res/arab/walk", 4, "arab_walk");
+	add_game_model_list(game_models, "../res/arab/walkl", 4, "arab_walk_left");
 	
 }
 
