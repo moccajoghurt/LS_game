@@ -231,6 +231,7 @@ void handle_std_attack(GAME_VARIABLES *game_variables, PLAYER *player) {
 					player->current_model = player->walk_right->model;
 					player->spell_timer_count = 0;
 					game_variables->is_casting = 0;
+					game_variables->current_cast = -1; // so player can be harmed after melee attack
 				}
 
 			} else {
@@ -248,6 +249,7 @@ void handle_std_attack(GAME_VARIABLES *game_variables, PLAYER *player) {
 					player->current_model = player->walk_left->model;
 					player->spell_timer_count = 0;
 					game_variables->is_casting = 0;
+					game_variables->current_cast = -1; // so player can be harmed after melee attack
 				}
 			}
 
@@ -503,7 +505,7 @@ void handle_casting(GAME_VARIABLES *game_variables, PLAYER *player, CURRENT_EFFE
 						player->current_model = player->spell_1->model;
 						player->spell_1 = player->spell_1->next;
 						SDL_Rect loc = player->position;
-						loc.y += 80;
+						loc.y += 100;
 						create_effect(effects, loc, 1310, loc.y, "enemy", 1, 30, "fod", effect_models, game_models, 0, 0);
 
 					} else if (player->spell_timer_count == 30) {
@@ -1084,16 +1086,17 @@ void create_enemy(SDL_Rect pos, const char* enemy_name, CURRENT_ENEMIES* enemies
 		enemies->object->death_2_left = get_game_model_list(model_lists, "arab_death");
 		
 		
-		enemies->object->walk_intervall = 5;
+		enemies->object->walk_intervall = 4;
 		enemies->object->walk_count = 0;
 		
 		enemies->object->death_intervall = 7;
 		enemies->object->death_count = 0;
 		
-		enemies->object->attack_intervall = 3;
+		enemies->object->attack_intervall = 5;
 		enemies->object->attack_count = 0;
 		
 		enemies->object->position = pos;
+		enemies->object->position.y -= 25;
 		
 		if (pos.x < player->position.x) {
 			enemies->object->direction_left = 1;
@@ -1134,7 +1137,7 @@ void handle_game_time(GAME_TIMER* timer) {
 void enemy_creation(GAME_TIMER* timer, CURRENT_ENEMIES* enemies, GAME_MODEL_LISTS* model_lists, PLAYER* player) {
 	
 	
-	if (timer->counter == 1) {
+	if (timer->counter == 1 && timer->seconds_played % 5 == 0) {
 		SDL_Rect pos;
 		pos.x = 1300;
 		pos.y = 350;
@@ -1339,7 +1342,55 @@ void handle_enemy_attack(CURRENT_ENEMIES* enemies, PLAYER *player, CURRENT_EFFEC
 				
 				
 			}
+			
+			
+		} else if (strcmp(enemies->object->name, "arab") == 0) {
+			int distance = enemies->object->position.x - player->position.x;
+			distance = distance < 0 ? -distance + 50 : distance;
+			
+			if (distance < 120 && enemies->object->is_attacking == 0 && enemies->object->is_alive) {
+				enemies->object->is_attacking = 1;
+				
+			
+			} else if (enemies->object->is_attacking == 1 && enemies->object->is_alive) {
+				
+				enemies->object->attack_count += 1;
+				
+				if (enemies->object->attack_count == enemies->object->attack_intervall) {
+					
+					enemies->object->attack_count = 0;
+				
+					if (enemies->object->direction_left == 0) {
+						
+						if (enemies->object->attack->next->model == NULL) {
+							enemies->object->attack = enemies->object->attack->first;
+							enemies->object->is_attacking = 0;
+							
+						} else {
+							enemies->object->attack = enemies->object->attack->next;
+							enemies->object->current_model = enemies->object->attack->model;
+						}
+						
+					} else {
+						
+						if (enemies->object->attack_left->next->model == NULL) {
+							enemies->object->attack_left = enemies->object->attack_left->first;
+							enemies->object->is_attacking = 0;
+							
+						} else {
+							enemies->object->attack_left = enemies->object->attack_left->next;
+							enemies->object->current_model = enemies->object->attack_left->model;
+						}
+						
+					}
+				}
+				
+				
+				
+			}
 		}
+		
+		
 		enemies = enemies->next;
 	}
 	
@@ -1424,11 +1475,35 @@ void check_enemy_effects_collision(PLAYER* player, CURRENT_EFFECTS* effects) {
 				break;
 		}
 		
-	} else {
+	}
+}
+
+void handle_player_harm_cd(PLAYER* player) {
+	
+	if (player->harm_cd > 0) {
 		player->harm_cd -= 1;
 	}
 }
 
+
+void check_enemy_melee_collision(GAME_VARIABLES *game_variables, PLAYER* player, CURRENT_ENEMIES* enemies) {
+	
+	while (enemies->next != NULL) {
+		
+		if (enemies->object->is_attacking && game_variables->current_cast != 0 && player->harm_cd == 0) {
+			
+			if (detect_rect_collision(&enemies->object->position, &player->position)) {
+				
+				if (detect_pixel_collision(enemies->object->current_model, player->current_model, &enemies->object->position, &player->position)) {
+					player->health -= 10;
+					player->harm_cd = 100;
+				}
+			}
+		}
+		
+		enemies = enemies->next;
+	}
+}
 
 
 void draw_model(SDL_Surface *model, SDL_Rect pos, SDL_Surface *display) {
@@ -1468,6 +1543,11 @@ void handle_anim_effects(CURRENT_EFFECTS *effects) {
 }
 
 
+void start_genie_anim(EFFECT_MODEL_LIST* effect_models) {
+	
+}
+
+
 void draw_health_bar(PLAYER* player, STATIC_MODELS* static_models, META_STATS* meta_stats, SDL_Surface *display) {
 	SDL_BlitSurface(static_models->health_bar_frame, NULL, display, &static_models->health_bar_frame_pos);
 	
@@ -1498,7 +1578,6 @@ void draw_effects(CURRENT_EFFECTS *effects, SDL_Surface *display) {
 		
 		SDL_BlitSurface(effects->object->model, NULL, display, &effects->object->position);
 		
-
 		effects = effects->next;
 	}
 }
