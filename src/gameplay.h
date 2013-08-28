@@ -1571,6 +1571,12 @@ void draw_health_bar(PLAYER* player, STATIC_MODELS* static_models, META_DATA* me
 	
 }
 
+void draw_pause_screen(SDL_Surface* pause_shade, SDL_Surface* display) {
+	
+	
+	SDL_BlitSurface(pause_shade, NULL, display, NULL);
+	
+}
 
 void draw_effects(CURRENT_EFFECTS *effects, SDL_Surface *display) {
 

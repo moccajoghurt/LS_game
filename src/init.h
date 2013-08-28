@@ -156,6 +156,14 @@ void init_static_models(STATIC_MODELS *static_models, SDL_Surface* display) {
 	SDL_Surface *bg_src = SDL_LoadBMP("../res/background.bmp");
 	static_models->background = SDL_DisplayFormat(bg_src);
 	
+	SDL_Surface *pause_shade_src = SDL_LoadBMP("../res/pause_shade.bmp");
+	static_models->pause_shade = SDL_DisplayFormat(pause_shade_src);
+	SDL_SetAlpha(static_models->pause_shade, SDL_SRCALPHA, 180);
+	
+	SDL_Surface *select_symbol_src = SDL_LoadBMP("../res/select_symbol.bmp");
+	static_models->select_symbol = SDL_DisplayFormat(select_symbol_src);
+	SDL_SetColorKey(static_models->select_symbol, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(static_models->select_symbol->format, 0, 0, 0));
+	
 	SDL_Surface *health_src = SDL_LoadBMP("../res/healthbar.bmp");
 	static_models->health_bar_frame = SDL_DisplayFormat(health_src);
 	static_models->health_bar_frame_pos.x = 20;
@@ -268,6 +276,16 @@ void init_meta_data(META_DATA* meta_data) {
 	meta_data->experience = 0;
 	meta_data->level = 1;
 	meta_data->game_running = 1;
+	meta_data->level_running = 1;
+	meta_data->game_paused = 0;
+	
+	SDL_Rect select_symbol_pos;
+	select_symbol_pos.y = 205;
+	select_symbol_pos.x = 520;
+	
+	meta_data->pause_select_state = 0;
+	meta_data->pause_select_symbol_pos = select_symbol_pos;
+	
 }
 
 
@@ -329,6 +347,31 @@ void init_font_list(const char* base_filename, FONT_LIST* font_list) {
 		SDL_FreeSurface(bmp);
 		
 	}
+	
+}
+
+void init_static_positions(STATIC_POSITIONS* static_positions) {
+	
+	SDL_Rect pause_text_pos;
+	pause_text_pos.y = 50;
+	pause_text_pos.x = 580;
+	static_positions->pause_text_pos = pause_text_pos;
+	
+	SDL_Rect main_menu_pos;
+	main_menu_pos.y = 200;
+	main_menu_pos.x = 530;
+	static_positions->main_menu_pos = main_menu_pos;
+	
+	
+	SDL_Rect music_pos;
+	music_pos.y = 240;
+	music_pos.x = 530;
+	static_positions->music_pos = music_pos;
+	
+	SDL_Rect exit_pos;
+	exit_pos.y = 280;
+	exit_pos.x = 530;
+	static_positions->exit_pos = exit_pos;
 	
 }
 

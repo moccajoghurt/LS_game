@@ -28,6 +28,9 @@ int WinMain(int argc, char** argv) {
 	FONT_LIST* font_list = calloc(1, sizeof(FONT_LIST));
 	init_font_list("../res/font/font", font_list);
 	
+	STATIC_POSITIONS* static_positions = calloc(1, sizeof(STATIC_POSITIONS));
+	init_static_positions(static_positions);
+	
 	PLAYER* player = create_player("piccolo", meta_data);
 	GAME_VARIABLES* game_variables = calloc(1, sizeof(GAME_VARIABLES));
 	init_game_variables(game_variables, "piccolo");
@@ -45,36 +48,47 @@ int WinMain(int argc, char** argv) {
 	STATIC_MODELS* static_models = calloc(1, sizeof(STATIC_MODELS));
 	init_static_models(static_models, display);
 	
-	SDL_Rect pos;
-	pos.x = 500;
-	pos.y = 50;
-	
 	while (meta_data->game_running) {
-		handle_game_time(timer);
-		enemy_creation(timer, enemies, game_models, player);
-		draw_background(display, static_models);
-		check_keyboard_input(&event, game_variables, meta_data);
-		spell_timer(game_variables);
-		handle_casting(game_variables, player, effects, effect_models, game_models);
-		handle_std_attack(game_variables, player);
-		move_effects(effects, game_models);
-		handle_anim_effects(effects);
-		move_player(game_variables, player, display);
-		move_enemies(enemies, player);
-		handle_enemy_attack(enemies, player, effects, effect_models, game_models);
-		check_melee_attack_collision(game_variables, player, enemies);
-		check_spell_collisions(effects, enemies, player, game_models, effect_models);
-		check_enemy_effects_collision(player, effects);
-		check_enemy_melee_collision(game_variables, player, enemies);
-		handle_enemy_death(enemies);
-		handle_player_harm_cd(player);
-		draw_model(player->current_model, player->position, display);
-		draw_enemies(enemies, display);
-		draw_effects(effects, display);
-		draw_health_bar(player, static_models, meta_data, display);
 		
-		draw_text("CHOOSE A CHARACTER!!", font_list, pos, display);
-		
+		if (meta_data->level_running) {
+			handle_game_time(timer);
+			enemy_creation(timer, enemies, game_models, player);
+			draw_background(display, static_models);
+			check_keyboard_input(&event, game_variables, meta_data);
+			spell_timer(game_variables);
+			handle_casting(game_variables, player, effects, effect_models, game_models);
+			handle_std_attack(game_variables, player);
+			move_effects(effects, game_models);
+			handle_anim_effects(effects);
+			move_player(game_variables, player, display);
+			move_enemies(enemies, player);
+			handle_enemy_attack(enemies, player, effects, effect_models, game_models);
+			check_melee_attack_collision(game_variables, player, enemies);
+			check_spell_collisions(effects, enemies, player, game_models, effect_models);
+			check_enemy_effects_collision(player, effects);
+			check_enemy_melee_collision(game_variables, player, enemies);
+			handle_enemy_death(enemies);
+			handle_player_harm_cd(player);
+			draw_model(player->current_model, player->position, display);
+			draw_enemies(enemies, display);
+			draw_effects(effects, display);
+			draw_health_bar(player, static_models, meta_data, display);
+			
+			
+		} else if (meta_data->game_paused) {
+			check_keyboard_input(&event, game_variables, meta_data);
+			draw_background(display, static_models);
+			draw_model(player->current_model, player->position, display);
+			draw_enemies(enemies, display);
+			draw_effects(effects, display);
+			draw_health_bar(player, static_models, meta_data, display);
+			draw_pause_screen(static_models->pause_shade, display);
+			draw_text("PAUSE", font_list, static_positions->pause_text_pos, display);
+			draw_text("MAIN MENU", font_list, static_positions->main_menu_pos, display);
+			draw_text("MUSIC ON", font_list, static_positions->music_pos, display);
+			draw_text("EXIT GAME", font_list, static_positions->exit_pos, display);
+			draw_model(static_models->select_symbol, meta_data->pause_select_symbol_pos, display);
+		}
 		
 		SDL_Flip(display);
 		SDL_Delay(10);

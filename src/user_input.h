@@ -25,48 +25,98 @@ int check_keyboard_input(SDL_Event *event, GAME_VARIABLES* game_variables, META_
 
 void handle_key_event(SDL_KeyboardEvent* key, GAME_VARIABLES* game_variables, META_DATA* meta_data) {
 	
-	if (key->type == SDL_KEYDOWN) {
-		
-		if (key->keysym.sym == SDLK_LEFT) {
-			game_variables->move_left = 1;
-			game_variables->move_right = 0;
-			game_variables->direction_changed = 1;
+	if (meta_data->level_running) {
+	
+		if (key->type == SDL_KEYDOWN) {
 			
-		} else if (key->keysym.sym == SDLK_RIGHT) {
-			game_variables->move_right = 1;
-			game_variables->move_left = 0;
-			game_variables->direction_changed = 1;
-			
-		} else if (key->keysym.sym == SDLK_UP) {
-			game_variables->jumping = 1;
-			
-		}else if (key->keysym.sym == SDLK_r) {
-			if (game_variables->is_casting == 0) {
-				game_variables->is_casting = 1;
-				game_variables->current_cast = 0;
+			if (key->keysym.sym == SDLK_LEFT) {
+				game_variables->move_left = 1;
+				game_variables->move_right = 0;
+				game_variables->direction_changed = 1;
+				
+			} else if (key->keysym.sym == SDLK_RIGHT) {
+				game_variables->move_right = 1;
+				game_variables->move_left = 0;
+				game_variables->direction_changed = 1;
+				
+			} else if (key->keysym.sym == SDLK_UP) {
+				game_variables->jumping = 1;
+				
+			} else if (key->keysym.sym == SDLK_r) {
+				if (game_variables->is_casting == 0) {
+					game_variables->is_casting = 1;
+					game_variables->current_cast = 0;
+				}
+				
+			} else if (key->keysym.sym == SDLK_ESCAPE) {
+				meta_data->level_running = 0;
+				meta_data->game_paused = 1;
+				
+			} else {
+				
+				if (game_variables->is_casting == 0) { 
+					check_spell(key->keysym.sym, game_variables);
+				}
 			}
 			
-		} else if (key->keysym.sym == SDLK_ESCAPE) {
-			meta_data->game_running = 0;
 			
-		} else {
+		} else if (key->type == SDL_KEYUP) {
 			
-			if (game_variables->is_casting == 0) { 
-				check_spell(key->keysym.sym, game_variables);
+			if (key->keysym.sym == SDLK_LEFT) {
+				game_variables->move_left = 0;
+				
+			} else if (key->keysym.sym == SDLK_RIGHT) {
+				game_variables->move_right = 0;
+			}
+			
+		}
+		
+	} else if (meta_data->game_paused) {
+		
+		if (key->type == SDL_KEYDOWN) {
+		
+			if (key->keysym.sym == SDLK_ESCAPE) {
+				
+				meta_data->level_running = 1;
+				meta_data->game_paused = 0;
+				
+			} else if (key->keysym.sym == SDLK_RETURN) {
+				if (meta_data->pause_select_state == 0) {
+					//main menu
+					
+				} else if (meta_data->pause_select_state == 1) {
+					//music on / off
+					
+				} else if (meta_data->pause_select_state == 2) {
+					meta_data->game_running = 0;
+				}
+				
+			} else if (key->keysym.sym == SDLK_UP) {
+				
+				if (meta_data->pause_select_state == 1) {
+					meta_data->pause_select_symbol_pos.y -= 40;
+					meta_data->pause_select_state = 0;
+					
+				} else if (meta_data->pause_select_state == 2) {
+					meta_data->pause_select_symbol_pos.y -= 40;
+					meta_data->pause_select_state = 1;
+				}
+				
+			} else if (key->keysym.sym == SDLK_DOWN) {
+				
+				if (meta_data->pause_select_state == 0) {
+					meta_data->pause_select_symbol_pos.y += 40;
+					meta_data->pause_select_state = 1;
+					
+				} else if (meta_data->pause_select_state == 1) {
+					meta_data->pause_select_symbol_pos.y += 40;
+					meta_data->pause_select_state = 2;
+				}
+				
 			}
 		}
-		
-		
-	} else if (key->type == SDL_KEYUP) {
-		
-		if (key->keysym.sym == SDLK_LEFT) {
-			game_variables->move_left = 0;
-			
-		} else if (key->keysym.sym == SDLK_RIGHT) {
-			game_variables->move_right = 0;
-		}
-		
 	}
+	
 }
 
 

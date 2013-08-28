@@ -54,6 +54,8 @@ struct GAME_MODEL_LISTS {
 typedef struct STATIC_MODELS {
 
 	SDL_Surface *background;
+	SDL_Surface *pause_shade;
+	SDL_Surface *select_symbol;
 	SDL_Surface *health_bar_frame;
 	
 	SDL_Rect health_bar_frame_pos;
@@ -207,6 +209,8 @@ typedef struct META_DATA {
 	STATE game_intro;
 	STATE main_menu;
 	
+	SDL_Rect pause_select_symbol_pos;
+	STATE pause_select_state;
 	
 } META_DATA;
 
@@ -218,4 +222,13 @@ struct FONT_LIST {
 	
 };
 
+typedef struct STATIC_POSITIONS {
+	
+	SDL_Rect pause_text_pos;
+	SDL_Rect main_menu_pos;
+	SDL_Rect music_pos;
+	SDL_Rect exit_pos;
+	
+	
+} STATIC_POSITIONS;
 
