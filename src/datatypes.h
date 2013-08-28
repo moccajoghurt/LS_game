@@ -11,8 +11,6 @@ static ULONG score = 0;
 
 typedef struct GAME_VARIABLES {
 
-	UCHAR game_running;
-
 	char *spell_input;
 	int spell_timer;
 	UCHAR move_left;
@@ -195,8 +193,7 @@ typedef struct GAME_TIMER {
 } GAME_TIMER;
 
 
-typedef struct META_STATS {
-	
+typedef struct META_DATA {
 	
 	int experience;
 	int level;
@@ -204,7 +201,21 @@ typedef struct META_STATS {
 	int current_stage;
 	int **enemies_per_stage;
 	
+	STATE game_running;
+	STATE level_running;
+	STATE game_paused;
+	STATE game_intro;
+	STATE main_menu;
 	
-} META_STATS;
+	
+} META_DATA;
+
+typedef struct FONT_LIST FONT_LIST;
+struct FONT_LIST {
+	char value;
+	FONT_LIST *next;
+	SDL_Surface *model;
+	
+};
 
 

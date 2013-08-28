@@ -37,7 +37,7 @@ MODEL_LIST *create_model_list(const char *base_filename, const int model_count) 
 }
 
 
-PLAYER *create_player(const char *char_name, META_STATS* meta_stats) {
+PLAYER *create_player(const char *char_name, META_DATA* meta_data) {
 
 	PLAYER *player = calloc(1, sizeof(PLAYER));
 
@@ -64,7 +64,7 @@ PLAYER *create_player(const char *char_name, META_STATS* meta_stats) {
 		player->got_hit_left = create_model_list("../res/piccolo/got_hitl", 1);
 
 
-		player->health = 25 + meta_stats->level*25;
+		player->health = 25 + meta_data->level*25;
 		player->position.x = 500;
 		player->position.y = 310;
 		player->position.h = 150;
@@ -108,7 +108,7 @@ PLAYER *create_player(const char *char_name, META_STATS* meta_stats) {
 		player->got_hit_left = create_model_list("../res/piccolo/got_hitl", 1);
 
 
-		player->health = 25 + meta_stats->level*25;
+		player->health = 25 + meta_data->level*25;
 		player->position.x = 100;
 		player->position.y = 310;
 		player->position.h = 150;
@@ -140,7 +140,6 @@ PLAYER *create_player(const char *char_name, META_STATS* meta_stats) {
 void init_game_variables(GAME_VARIABLES *game_variables, char *player_name) {
 	game_variables->spell_input = calloc(1,5);
 	game_variables->spell_timer = 0;
-	game_variables->game_running = 1;
 	game_variables->move_left = 0;
 	game_variables->move_right = 0;
 	game_variables->jumping= 0;
@@ -263,10 +262,73 @@ void init_game_timer(GAME_TIMER* timer) {
 }
 
 
-void init_meta_stats(META_STATS* meta_stats) {
+void init_meta_data(META_DATA* meta_data) {
 	
 	//read file here
-	meta_stats->experience = 0;
-	meta_stats->level = 1;
+	meta_data->experience = 0;
+	meta_data->level = 1;
+	meta_data->game_running = 1;
+}
+
+
+
+void init_font_list(const char* base_filename, FONT_LIST* font_list) {
+	
+	FONT_LIST* first_val = font_list;
+	int num_count = 0;
+	for (int i = 0; i < 37; i++) {
+		
+		
+		
+		char *filename = calloc(1, 100);
+		char num[3];
+		sprintf(num, "%d", i);
+		strcpy(filename, base_filename);
+		strcat(filename, num);
+		strcat(filename, ".bmp");
+		SDL_Surface *bmp = SDL_LoadBMP(filename);
+		
+		if (bmp == NULL) {
+			puts("couldn't load BMP file:");
+			puts(filename);
+			exit(1);
+		}
+		
+		
+		
+		char c;
+		
+		if (i < 26) {
+			c = 65 + i;
+			
+		} else if (i >= 26 && i < 35) {
+			c = 49 + num_count;
+			num_count++;
+			
+		} else if (i == 35) {
+			c = '!';
+			
+			
+		} else if (i == 36) {
+			c = '?';
+		}
+		
+		
+		while (first_val->next != NULL) {
+			first_val = first_val->next;
+		}
+		
+		
+		first_val->value = c;
+		first_val->next = calloc(1, sizeof(FONT_LIST));
+		
+		first_val->model = SDL_DisplayFormat(bmp);
+		
+		SDL_SetColorKey(first_val->model, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(first_val->model->format, 0, 0, 0));
+		free(filename);
+		SDL_FreeSurface(bmp);
+		
+	}
+	
 }
 

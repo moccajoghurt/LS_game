@@ -1548,11 +1548,11 @@ void start_genie_anim(EFFECT_MODEL_LIST* effect_models) {
 }
 
 
-void draw_health_bar(PLAYER* player, STATIC_MODELS* static_models, META_STATS* meta_stats, SDL_Surface *display) {
+void draw_health_bar(PLAYER* player, STATIC_MODELS* static_models, META_DATA* meta_data, SDL_Surface *display) {
 	SDL_BlitSurface(static_models->health_bar_frame, NULL, display, &static_models->health_bar_frame_pos);
 	
 	
-	int health_percentage = (player->health * 100) / (25 + meta_stats->level*25);
+	int health_percentage = (player->health * 100) / (25 + meta_data->level*25);
 	int progress_bar_percentage = (static_models->health_bar.w*100) / static_models->health_bar_max_width;
 	
 	if (health_percentage < progress_bar_percentage) {

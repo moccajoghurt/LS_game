@@ -1,9 +1,9 @@
 
 
-void handle_key_event(SDL_KeyboardEvent* key, GAME_VARIABLES* game_variables);
+void handle_key_event(SDL_KeyboardEvent* key, GAME_VARIABLES* game_variables, META_DATA* meta_data);
 int check_spell(char key, GAME_VARIABLES* game_variables);
 
-int check_keyboard_input(SDL_Event *event, GAME_VARIABLES* game_variables) {
+int check_keyboard_input(SDL_Event *event, GAME_VARIABLES* game_variables, META_DATA* meta_data) {
 	
 	while(SDL_PollEvent(event)) {
 		
@@ -11,7 +11,7 @@ int check_keyboard_input(SDL_Event *event, GAME_VARIABLES* game_variables) {
 			
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
-				handle_key_event(&event->key, game_variables);
+				handle_key_event(&event->key, game_variables, meta_data);
 				break;
 			default:
 				break;
@@ -23,7 +23,7 @@ int check_keyboard_input(SDL_Event *event, GAME_VARIABLES* game_variables) {
 }
 
 
-void handle_key_event(SDL_KeyboardEvent* key, GAME_VARIABLES* game_variables) {
+void handle_key_event(SDL_KeyboardEvent* key, GAME_VARIABLES* game_variables, META_DATA* meta_data) {
 	
 	if (key->type == SDL_KEYDOWN) {
 		
@@ -47,7 +47,7 @@ void handle_key_event(SDL_KeyboardEvent* key, GAME_VARIABLES* game_variables) {
 			}
 			
 		} else if (key->keysym.sym == SDLK_ESCAPE) {
-			game_variables->game_running = 0;
+			meta_data->game_running = 0;
 			
 		} else {
 			

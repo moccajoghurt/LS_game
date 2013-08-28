@@ -1,7 +1,3 @@
-/*
-	TODO: ebl1 explosion und direction_left bei spell mit eb
-
-*/
 
 #include <SDL/SDL.h>
 #include <stdio.h>
@@ -12,6 +8,7 @@ typedef unsigned char UCHAR;
 #include "init.h"
 #include "gameplay.h"
 #include "user_input.h"
+#include "text_drawing.h"
 
 
 int WinMain(int argc, char** argv) {
@@ -25,10 +22,13 @@ int WinMain(int argc, char** argv) {
 	GAME_TIMER* timer = calloc(1, sizeof(GAME_TIMER));
 	init_game_timer(timer);
 	
-	META_STATS* meta_stats = calloc(1, sizeof(META_STATS));
-	init_meta_stats(meta_stats);
+	META_DATA* meta_data = calloc(1, sizeof(META_DATA));
+	init_meta_data(meta_data);
 	
-	PLAYER* player = create_player("piccolo", meta_stats);
+	FONT_LIST* font_list = calloc(1, sizeof(FONT_LIST));
+	init_font_list("../res/font/font", font_list);
+	
+	PLAYER* player = create_player("piccolo", meta_data);
 	GAME_VARIABLES* game_variables = calloc(1, sizeof(GAME_VARIABLES));
 	init_game_variables(game_variables, "piccolo");
 	
@@ -45,12 +45,15 @@ int WinMain(int argc, char** argv) {
 	STATIC_MODELS* static_models = calloc(1, sizeof(STATIC_MODELS));
 	init_static_models(static_models, display);
 	
+	SDL_Rect pos;
+	pos.x = 500;
+	pos.y = 50;
 	
-	while (game_variables->game_running) {
+	while (meta_data->game_running) {
 		handle_game_time(timer);
 		enemy_creation(timer, enemies, game_models, player);
 		draw_background(display, static_models);
-		check_keyboard_input(&event, game_variables);
+		check_keyboard_input(&event, game_variables, meta_data);
 		spell_timer(game_variables);
 		handle_casting(game_variables, player, effects, effect_models, game_models);
 		handle_std_attack(game_variables, player);
@@ -68,7 +71,9 @@ int WinMain(int argc, char** argv) {
 		draw_model(player->current_model, player->position, display);
 		draw_enemies(enemies, display);
 		draw_effects(effects, display);
-		draw_health_bar(player, static_models, meta_stats, display);
+		draw_health_bar(player, static_models, meta_data, display);
+		
+		draw_text("CHOOSE A CHARACTER!!", font_list, pos, display);
 		
 		
 		SDL_Flip(display);
