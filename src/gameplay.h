@@ -410,8 +410,7 @@ void remove_enemy_by_id(CURRENT_ENEMIES* enemies, ULONG id) {
 	
 	
 	while (enemies->next != NULL) {
-
-
+		
 		if (enemies->id == id) {
 
 			if (enemies->before != NULL && enemies->next->object != NULL) {
@@ -1137,7 +1136,7 @@ void handle_game_time(GAME_TIMER* timer) {
 void enemy_creation(GAME_TIMER* timer, CURRENT_ENEMIES* enemies, GAME_MODEL_LISTS* model_lists, PLAYER* player) {
 	
 	
-	if (timer->counter == 1 && timer->seconds_played % 5 == 0) {
+	if (timer->counter == 1 && timer->seconds_played % 1 == 0) {
 		SDL_Rect pos;
 		pos.x = 1300;
 		pos.y = 350;
@@ -1205,7 +1204,7 @@ void move_enemies(CURRENT_ENEMIES* enemies, PLAYER* player) {
 }
 
 
-void handle_enemy_death(CURRENT_ENEMIES* enemies) {
+void handle_enemy_death(CURRENT_ENEMIES* enemies, META_DATA* meta_data) {
 	
 	
 	while (enemies->next != NULL) {
@@ -1223,6 +1222,7 @@ void handle_enemy_death(CURRENT_ENEMIES* enemies) {
 					
 						if (enemies->object->death_1->next->model == NULL) {
 							remove_enemy_by_id(enemies, enemies->id);
+							meta_data->current_stage_enemies_killed++;
 							continue;
 							
 						} else {
@@ -1234,6 +1234,7 @@ void handle_enemy_death(CURRENT_ENEMIES* enemies) {
 						
 						if (enemies->object->death_2->next->model == NULL) {
 							remove_enemy_by_id(enemies, enemies->id);
+							meta_data->current_stage_enemies_killed++;
 							continue;
 							
 						} else {
@@ -1252,6 +1253,7 @@ void handle_enemy_death(CURRENT_ENEMIES* enemies) {
 					
 						if (enemies->object->death_1_left->next->model == NULL) {
 							remove_enemy_by_id(enemies, enemies->id);
+							meta_data->current_stage_enemies_killed++;
 							continue;
 							
 						} else {
@@ -1263,6 +1265,7 @@ void handle_enemy_death(CURRENT_ENEMIES* enemies) {
 						
 						if (enemies->object->death_2_left->next->model == NULL) {
 							remove_enemy_by_id(enemies, enemies->id);
+							meta_data->current_stage_enemies_killed++;
 							continue;
 							
 						} else {
@@ -1273,8 +1276,8 @@ void handle_enemy_death(CURRENT_ENEMIES* enemies) {
 					}
 				}
 			}
+			
 		}
-		
 		
 		enemies = enemies->next;
 	}
@@ -1543,8 +1546,13 @@ void handle_anim_effects(CURRENT_EFFECTS *effects) {
 }
 
 
-void start_genie_anim(EFFECT_MODEL_LIST* effect_models) {
-	
+
+void check_level_progress(META_DATA* meta_data) {
+	if (meta_data->enemies_per_stage[meta_data->current_stage] == meta_data->current_stage_enemies_killed) {
+		meta_data->level_completed = 1;
+		meta_data->level_running = 0;
+		meta_data->current_stage_enemies_killed = 0;
+	}
 }
 
 

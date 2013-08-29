@@ -188,6 +188,8 @@ struct CURRENT_EFFECTS {
 typedef struct GAME_TIMER {
 	
 	ULONG seconds_played;
+	int current_level_seconds_played;
+	int level_intro_timer;
 	int enemy_spawn_timer;
 	
 	int counter;
@@ -201,13 +203,16 @@ typedef struct META_DATA {
 	int level;
 	
 	int current_stage;
-	int **enemies_per_stage;
+	int *enemies_per_stage;
+	int current_stage_enemies_killed;
 	
 	STATE game_running;
 	STATE level_running;
 	STATE game_paused;
 	STATE game_intro;
 	STATE main_menu;
+	STATE level_intro;
+	STATE level_completed;
 	
 	SDL_Rect pause_select_symbol_pos;
 	STATE pause_select_state;
@@ -228,7 +233,7 @@ typedef struct STATIC_POSITIONS {
 	SDL_Rect main_menu_pos;
 	SDL_Rect music_pos;
 	SDL_Rect exit_pos;
-	
+	SDL_Rect level_intro_pos;
 	
 } STATIC_POSITIONS;
 

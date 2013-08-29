@@ -263,6 +263,8 @@ void init_game_model_lists(GAME_MODEL_LISTS *game_models) {
 }
 
 void init_game_timer(GAME_TIMER* timer) {
+	timer->level_intro_timer = 0;
+	timer->current_level_seconds_played = 0;
 	timer->seconds_played = 0;
 	timer->enemy_spawn_timer = 200;
 	timer->counter = 0;
@@ -275,9 +277,21 @@ void init_meta_data(META_DATA* meta_data) {
 	//read file here
 	meta_data->experience = 0;
 	meta_data->level = 1;
+	
+	
+	meta_data->enemies_per_stage = malloc(sizeof(int)*10);
+	for (int i = 0; i < 10; i++) {
+		meta_data->enemies_per_stage[i] = 5;
+	}
+	
+	
 	meta_data->game_running = 1;
-	meta_data->level_running = 1;
+	meta_data->level_running = 0;
 	meta_data->game_paused = 0;
+	meta_data->current_stage = 1;
+	meta_data->level_intro = 1;
+	meta_data->level_completed = 0;
+	meta_data->current_stage_enemies_killed = 0;
 	
 	SDL_Rect select_symbol_pos;
 	select_symbol_pos.y = 205;
@@ -372,6 +386,11 @@ void init_static_positions(STATIC_POSITIONS* static_positions) {
 	exit_pos.y = 280;
 	exit_pos.x = 530;
 	static_positions->exit_pos = exit_pos;
+	
+	SDL_Rect level_intro_pos;
+	level_intro_pos.y = 250;
+	level_intro_pos.x = 530;
+	static_positions->level_intro_pos = level_intro_pos;
 	
 }
 

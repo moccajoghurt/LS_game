@@ -9,6 +9,7 @@ typedef unsigned char UCHAR;
 #include "gameplay.h"
 #include "user_input.h"
 #include "text_drawing.h"
+#include "sequences.h"
 
 
 int WinMain(int argc, char** argv) {
@@ -51,10 +52,10 @@ int WinMain(int argc, char** argv) {
 	while (meta_data->game_running) {
 		
 		if (meta_data->level_running) {
+			check_keyboard_input(&event, game_variables, meta_data);
 			handle_game_time(timer);
 			enemy_creation(timer, enemies, game_models, player);
 			draw_background(display, static_models);
-			check_keyboard_input(&event, game_variables, meta_data);
 			spell_timer(game_variables);
 			handle_casting(game_variables, player, effects, effect_models, game_models);
 			handle_std_attack(game_variables, player);
@@ -63,16 +64,17 @@ int WinMain(int argc, char** argv) {
 			move_player(game_variables, player, display);
 			move_enemies(enemies, player);
 			handle_enemy_attack(enemies, player, effects, effect_models, game_models);
-			check_melee_attack_collision(game_variables, player, enemies);
+			check_melee_attack_collision(game_variables, player, enemies); 
 			check_spell_collisions(effects, enemies, player, game_models, effect_models);
 			check_enemy_effects_collision(player, effects);
 			check_enemy_melee_collision(game_variables, player, enemies);
-			handle_enemy_death(enemies);
+			handle_enemy_death(enemies, meta_data);
 			handle_player_harm_cd(player);
 			draw_model(player->current_model, player->position, display);
 			draw_enemies(enemies, display);
 			draw_effects(effects, display);
 			draw_health_bar(player, static_models, meta_data, display);
+			check_level_progress(meta_data);
 			
 			
 		} else if (meta_data->game_paused) {
@@ -88,6 +90,16 @@ int WinMain(int argc, char** argv) {
 			draw_text("MUSIC ON", font_list, static_positions->music_pos, display);
 			draw_text("EXIT GAME", font_list, static_positions->exit_pos, display);
 			draw_model(static_models->select_symbol, meta_data->pause_select_symbol_pos, display);
+			
+		} else if (meta_data->level_intro) {
+			
+			draw_background(display, static_models);
+			draw_pause_screen(static_models->pause_shade, display);
+			handle_level_intro(meta_data, font_list, static_positions, timer, display);
+			
+		} else if (meta_data->level_completed) {
+			
+			meta_data->level_running = 1;
 		}
 		
 		SDL_Flip(display);
