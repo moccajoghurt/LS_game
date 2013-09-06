@@ -41,7 +41,7 @@ PLAYER *create_player(const char *char_name, META_DATA* meta_data) {
 
 	PLAYER *player = calloc(1, sizeof(PLAYER));
 
-	if (strcmp(char_name, "piccolo") == 0) {
+	if (strcmp(char_name, "PICCOLO") == 0) {
 
 
 		player->walk_right = create_model_list("../res/piccolo/wr", 5);
@@ -81,12 +81,12 @@ PLAYER *create_player(const char *char_name, META_DATA* meta_data) {
 		
 		player->harm_cd = 0;
 		
-		player->name = calloc(1, strlen("piccolo") + 1);
-		strcpy(player->name, "piccolo");
+		player->name = calloc(1, strlen("PICCOLO") + 1);
+		strcpy(player->name, "PICCOLO");
 
 
 
-	} else if (strcmp(char_name,"warlock") == 0) {
+	} else if (strcmp(char_name,"WARLOCK") == 0) {
 
 		player->walk_right = create_model_list("../res/piccolo/wr", 5);
 		player->walk_left = create_model_list("../res/piccolo/wl", 5);
@@ -125,8 +125,8 @@ PLAYER *create_player(const char *char_name, META_DATA* meta_data) {
 		
 		player->harm_cd = 0;
 		
-		player->name = calloc(1, strlen("warlock") + 1);
-		strcpy(player->name, "warlock");
+		player->name = calloc(1, strlen("WARLOCK") + 1);
+		strcpy(player->name, "WARLOCK");
 
 
 	} else {
@@ -167,11 +167,11 @@ void init_static_models(STATIC_MODELS *static_models, SDL_Surface* display) {
 	SDL_Surface *health_src = SDL_LoadBMP("../res/healthbar.bmp");
 	static_models->health_bar_frame = SDL_DisplayFormat(health_src);
 	static_models->health_bar_frame_pos.x = 20;
-	static_models->health_bar_frame_pos.y = 20;
+	static_models->health_bar_frame_pos.y = 60;
 	SDL_SetColorKey(static_models->health_bar_frame, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(static_models->health_bar_frame->format, 0, 0, 0));
 	
 	static_models->health_bar.x = 24;
-	static_models->health_bar.y = 24;
+	static_models->health_bar.y = 64;
 	
 	static_models->health_bar.w = 294;
 	static_models->health_bar.h = 23;
@@ -260,6 +260,14 @@ void init_game_model_lists(GAME_MODEL_LISTS *game_models) {
 	add_game_model_list(game_models, "../res/arab/walk", 4, "arab_walk");
 	add_game_model_list(game_models, "../res/arab/walkl", 4, "arab_walk_left");
 	
+	//krebs
+	add_game_model_list(game_models, "../res/krebs/attack", 42, "krebs_atk");
+	add_game_model_list(game_models, "../res/krebs/attackl", 42, "krebs_atk_left");
+	add_game_model_list(game_models, "../res/krebs/death", 16, "krebs_death");
+	add_game_model_list(game_models, "../res/krebs/deathl", 16, "krebs_death_left");
+	add_game_model_list(game_models, "../res/krebs/walk", 14, "krebs_walk");
+	add_game_model_list(game_models, "../res/krebs/walkl", 14, "krebs_walk_left");
+	
 }
 
 void init_game_timer(GAME_TIMER* timer) {
@@ -286,10 +294,10 @@ void init_meta_data(META_DATA* meta_data) {
 	
 	
 	meta_data->game_running = 1;
-	meta_data->level_running = 0;
+	meta_data->level_running = 1;
 	meta_data->game_paused = 0;
 	meta_data->current_stage = 1;
-	meta_data->level_intro = 1;
+	meta_data->level_intro = 0;
 	meta_data->level_completed = 0;
 	meta_data->current_stage_enemies_killed = 0;
 	

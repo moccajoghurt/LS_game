@@ -1,4 +1,3 @@
-
 #include <SDL/SDL.h>
 #include <stdio.h>
 typedef unsigned int UINT;
@@ -32,9 +31,9 @@ int WinMain(int argc, char** argv) {
 	STATIC_POSITIONS* static_positions = calloc(1, sizeof(STATIC_POSITIONS));
 	init_static_positions(static_positions);
 	
-	PLAYER* player = create_player("piccolo", meta_data);
+	PLAYER* player = create_player("PICCOLO", meta_data);
 	GAME_VARIABLES* game_variables = calloc(1, sizeof(GAME_VARIABLES));
-	init_game_variables(game_variables, "piccolo");
+	init_game_variables(game_variables, "PICCOLO");
 	
 	EFFECT_MODEL_LIST* effect_models = calloc(1, sizeof(EFFECT_MODEL_LIST));
 	init_effects(effect_models);
@@ -64,7 +63,7 @@ int WinMain(int argc, char** argv) {
 			move_player(game_variables, player, display);
 			move_enemies(enemies, player);
 			handle_enemy_attack(enemies, player, effects, effect_models, game_models);
-			check_melee_attack_collision(game_variables, player, enemies); 
+			check_melee_attack_collision(game_variables, player, enemies);
 			check_spell_collisions(effects, enemies, player, game_models, effect_models);
 			check_enemy_effects_collision(player, effects);
 			check_enemy_melee_collision(game_variables, player, enemies);
@@ -74,7 +73,10 @@ int WinMain(int argc, char** argv) {
 			draw_enemies(enemies, display);
 			draw_effects(effects, display);
 			draw_health_bar(player, static_models, meta_data, display);
+			draw_meta_data(font_list, player, meta_data, display);
 			check_level_progress(meta_data);
+			if (meta_data->level_running == 0)
+				clean_gameplay_memory(effects, enemies);
 			
 			
 		} else if (meta_data->game_paused) {
@@ -100,6 +102,7 @@ int WinMain(int argc, char** argv) {
 		} else if (meta_data->level_completed) {
 			
 			meta_data->level_running = 1;
+			//meta_data->game_running = 0;
 		}
 		
 		SDL_Flip(display);

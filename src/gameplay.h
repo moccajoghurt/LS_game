@@ -213,7 +213,7 @@ void handle_std_attack(GAME_VARIABLES *game_variables, PLAYER *player) {
 	if (game_variables->is_casting && game_variables->current_cast == 0) {
 		player->spell_timer_count += 1;
 
-		if (strcmp(game_variables->player_name, "piccolo") == 0) {
+		if (strcmp(game_variables->player_name, "PICCOLO") == 0) {
 
 
 
@@ -490,7 +490,7 @@ void handle_casting(GAME_VARIABLES *game_variables, PLAYER *player, CURRENT_EFFE
 	if (game_variables->is_casting) {
 		player->spell_timer_count += 1;
 
-		if (strcmp(game_variables->player_name, "piccolo") == 0) {
+		if (strcmp(game_variables->player_name, "PICCOLO") == 0) {
 
 
 			if (game_variables->current_cast == 1) {
@@ -1115,6 +1115,50 @@ void create_enemy(SDL_Rect pos, const char* enemy_name, CURRENT_ENEMIES* enemies
 		enemies->object->name = calloc(1, strlen("arab") + 1);
 		strcpy(enemies->object->name, "arab");
 		
+	} else if (strcmp(enemy_name, "krebs") == 0) {
+		
+		enemies->object = calloc(1, sizeof(ENEMY));
+		
+		enemies->object->walk_right = get_game_model_list(model_lists, "krebs_walk");
+		enemies->object->walk_left = get_game_model_list(model_lists, "krebs_walk_left");
+		enemies->object->attack = get_game_model_list(model_lists, "krebs_atk");
+		enemies->object->attack_left = get_game_model_list(model_lists, "krebs_atk_left");
+		enemies->object->death_1 = get_game_model_list(model_lists, "krebs_death");
+		enemies->object->death_1_left = get_game_model_list(model_lists, "krebs_death_left");
+		enemies->object->death_2 = get_game_model_list(model_lists, "krebs_death");
+		enemies->object->death_2_left = get_game_model_list(model_lists, "krebs_death_left");
+		
+		
+		enemies->object->walk_intervall = 4;
+		enemies->object->walk_count = 0;
+		
+		enemies->object->death_intervall = 7;
+		enemies->object->death_count = 0;
+		
+		enemies->object->attack_intervall = 5;
+		enemies->object->attack_count = 0;
+		
+		enemies->object->position = pos;
+		enemies->object->position.y += 45;
+		
+		if (pos.x < player->position.x) {
+			enemies->object->direction_left = 1;
+			enemies->object->current_model = enemies->object->walk_right->model;
+		} else {
+			enemies->object->direction_left = 0;
+			enemies->object->current_model = enemies->object->walk_left->model;
+		}
+		
+		enemies->object->is_targetable = 1;
+		enemies->object->is_attacking = 0;
+		enemies->object->is_alive = 1;
+		enemies->object->death_type = 1;
+		
+		enemies->object->health = 50;
+		
+		enemies->object->name = calloc(1, strlen("krebs") + 1);
+		strcpy(enemies->object->name, "krebs");
+		
 	}
 	
 	enemies->object->position.w = enemies->object->current_model->w;
@@ -1140,7 +1184,7 @@ void enemy_creation(GAME_TIMER* timer, CURRENT_ENEMIES* enemies, GAME_MODEL_LIST
 		SDL_Rect pos;
 		pos.x = 1300;
 		pos.y = 350;
-		create_enemy(pos, "arab", enemies, model_lists, player);
+		create_enemy(pos, "krebs", enemies, model_lists, player);
 		
 	}
 	
@@ -1149,7 +1193,7 @@ void enemy_creation(GAME_TIMER* timer, CURRENT_ENEMIES* enemies, GAME_MODEL_LIST
 		SDL_Rect pos;
 		pos.x = 0;
 		pos.y = 350;
-		create_enemy(pos, "mummy", enemies, model_lists, player);
+		//create_enemy(pos, "mummy", enemies, model_lists, player);
 		
 	}
 	
@@ -1391,6 +1435,51 @@ void handle_enemy_attack(CURRENT_ENEMIES* enemies, PLAYER *player, CURRENT_EFFEC
 				
 				
 			}
+			
+		} else if (strcmp(enemies->object->name, "krebs") == 0) {
+			int distance = enemies->object->position.x - player->position.x;
+			distance = distance < 0 ? -distance + 50 : distance;
+			
+			if (distance < 120 && enemies->object->is_attacking == 0 && enemies->object->is_alive) {
+				enemies->object->is_attacking = 1;
+				
+			
+			} else if (enemies->object->is_attacking == 1 && enemies->object->is_alive) {
+				
+				enemies->object->attack_count += 1;
+				
+				if (enemies->object->attack_count == enemies->object->attack_intervall) {
+					
+					enemies->object->attack_count = 0;
+				
+					if (enemies->object->direction_left == 0) {
+						
+						if (enemies->object->attack->next->model == NULL) {
+							enemies->object->attack = enemies->object->attack->first;
+							enemies->object->is_attacking = 0;
+							
+						} else {
+							enemies->object->attack = enemies->object->attack->next;
+							enemies->object->current_model = enemies->object->attack->model;
+						}
+						
+					} else {
+						
+						if (enemies->object->attack_left->next->model == NULL) {
+							enemies->object->attack_left = enemies->object->attack_left->first;
+							enemies->object->is_attacking = 0;
+							
+						} else {
+							enemies->object->attack_left = enemies->object->attack_left->next;
+							enemies->object->current_model = enemies->object->attack_left->model;
+						}
+						
+					}
+				}
+				
+				
+				
+			}
 		}
 		
 		
@@ -1548,7 +1637,7 @@ void handle_anim_effects(CURRENT_EFFECTS *effects) {
 
 
 void check_level_progress(META_DATA* meta_data) {
-	if (meta_data->enemies_per_stage[meta_data->current_stage] == meta_data->current_stage_enemies_killed) {
+	if (meta_data->enemies_per_stage[meta_data->current_stage] <= meta_data->current_stage_enemies_killed) {
 		meta_data->level_completed = 1;
 		meta_data->level_running = 0;
 		meta_data->current_stage_enemies_killed = 0;
@@ -1610,5 +1699,39 @@ void draw_enemies(CURRENT_ENEMIES* enemies, SDL_Surface *display) {
 void draw_background(SDL_Surface *display, STATIC_MODELS *static_models) {
 	SDL_BlitSurface(static_models->background, NULL, display, NULL);
 }
+
+
+
+void clean_gameplay_memory(CURRENT_EFFECTS* effects, CURRENT_ENEMIES* enemies) {
+	int first_element = 1;
+	CURRENT_EFFECTS* first = effects;
+	while (first->next != NULL) {
+		
+		first = first->next;
+		if (first_element == 0) {
+			free(first->before->object);
+			free(first->before);
+		}
+		first_element = 0;
+	}
+	memset(effects, 0, sizeof(CURRENT_EFFECTS));
+	
+	
+	first_element = 1;
+	CURRENT_ENEMIES* first_e = enemies;
+	while (first_e->next != NULL) {
+		
+		first_e = first_e->next;
+		if (first_element == 0) {
+			free(first_e->before->object);
+			free(first_e->before);
+		}
+		first_element = 0;
+	}
+	memset(enemies, 0, sizeof(CURRENT_EFFECTS));
+	
+}
+
+
 
 
