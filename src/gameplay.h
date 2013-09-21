@@ -1125,17 +1125,17 @@ void create_enemy(SDL_Rect pos, const char* enemy_name, CURRENT_ENEMIES* enemies
 		enemies->object->attack_left = get_game_model_list(model_lists, "krebs_atk_left");
 		enemies->object->death_1 = get_game_model_list(model_lists, "krebs_death");
 		enemies->object->death_1_left = get_game_model_list(model_lists, "krebs_death_left");
-		enemies->object->death_2 = get_game_model_list(model_lists, "krebs_death");
+		enemies->object->death_2 = get_game_model_list(model_lists, "krebs_death_left");
 		enemies->object->death_2_left = get_game_model_list(model_lists, "krebs_death_left");
 		
 		
 		enemies->object->walk_intervall = 4;
 		enemies->object->walk_count = 0;
 		
-		enemies->object->death_intervall = 7;
+		enemies->object->death_intervall = 4;
 		enemies->object->death_count = 0;
 		
-		enemies->object->attack_intervall = 5;
+		enemies->object->attack_intervall = 2;
 		enemies->object->attack_count = 0;
 		
 		enemies->object->position = pos;
@@ -1177,7 +1177,7 @@ void handle_game_time(GAME_TIMER* timer) {
 	
 }
 
-void enemy_creation(GAME_TIMER* timer, CURRENT_ENEMIES* enemies, GAME_MODEL_LISTS* model_lists, PLAYER* player) {
+void enemy_creation(GAME_TIMER* timer, CURRENT_ENEMIES* enemies, GAME_MODEL_LISTS* model_lists, PLAYER* player, CURRENT_EFFECTS *effects, EFFECT_MODEL_LIST *effect_models, GAME_MODEL_LISTS *game_models) {
 	
 	
 	if (timer->counter == 1 && timer->seconds_played % 1 == 0) {
@@ -1185,6 +1185,7 @@ void enemy_creation(GAME_TIMER* timer, CURRENT_ENEMIES* enemies, GAME_MODEL_LIST
 		pos.x = 1300;
 		pos.y = 350;
 		create_enemy(pos, "krebs", enemies, model_lists, player);
+		
 		
 	}
 	
@@ -1194,6 +1195,15 @@ void enemy_creation(GAME_TIMER* timer, CURRENT_ENEMIES* enemies, GAME_MODEL_LIST
 		pos.x = 0;
 		pos.y = 350;
 		//create_enemy(pos, "mummy", enemies, model_lists, player);
+		SDL_Rect loc;
+		loc.x = 1350;
+		loc.y = 200;
+		create_effect(effects, loc, 0, 0, "null", 1, 3, "vogel_left", NULL, game_models, 5, 1);
+		
+		SDL_Rect loc1;
+		loc1.x = 500;
+		loc1.y = 0;
+		create_effect(effects, loc1, 500, 800, "null", 1, 2, "health", effect_models, game_models, 0, 0);
 		
 	}
 	

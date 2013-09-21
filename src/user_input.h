@@ -130,7 +130,6 @@ int check_spell(char key, GAME_VARIABLES* game_variables) {
 	strcpy(game_variables->spell_input, buf);
 	game_variables->spell_input[4] = '\0';
 	free(buf);
-	puts(game_variables->spell_input);
 	
 	if (strlen(game_variables->spell_input) == 4) {
 		

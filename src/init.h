@@ -210,12 +210,17 @@ void add_effect(EFFECT_MODEL_LIST *first, const char *filename, const char *spel
 }
 
 void init_effects(EFFECT_MODEL_LIST *start) {
-
+	
+	//piccolo spells
 	add_effect(start, "../res/piccolo/spells/eb0.bmp", "eb0");
 	add_effect(start, "../res/piccolo/spells/eb1.bmp", "eb1");
 	add_effect(start, "../res/piccolo/spells/ebl0.bmp", "ebl0");
 	add_effect(start, "../res/piccolo/spells/ebl1.bmp", "ebl1");
 	add_effect(start, "../res/piccolo/spells/fod.bmp", "fod");
+	
+	
+	//health-pot
+	add_effect(start, "../res/items/health.bmp", "health");
 
 }
 
@@ -268,6 +273,9 @@ void init_game_model_lists(GAME_MODEL_LISTS *game_models) {
 	add_game_model_list(game_models, "../res/krebs/walk", 14, "krebs_walk");
 	add_game_model_list(game_models, "../res/krebs/walkl", 14, "krebs_walk_left");
 	
+	//vogel
+	add_game_model_list(game_models, "../res/vogel/vogel", 8, "vogel");
+	add_game_model_list(game_models, "../res/vogel/vogel_left", 8, "vogel_left");
 }
 
 void init_game_timer(GAME_TIMER* timer) {
@@ -294,10 +302,10 @@ void init_meta_data(META_DATA* meta_data) {
 	
 	
 	meta_data->game_running = 1;
-	meta_data->level_running = 1;
+	meta_data->level_running = 0;
 	meta_data->game_paused = 0;
 	meta_data->current_stage = 1;
-	meta_data->level_intro = 0;
+	meta_data->level_intro = 1;
 	meta_data->level_completed = 0;
 	meta_data->current_stage_enemies_killed = 0;
 	

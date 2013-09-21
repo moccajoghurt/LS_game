@@ -9,6 +9,7 @@ typedef unsigned char UCHAR;
 #include "user_input.h"
 #include "text_drawing.h"
 #include "sequences.h"
+#include "environment.h"
 
 
 int WinMain(int argc, char** argv) {
@@ -53,7 +54,7 @@ int WinMain(int argc, char** argv) {
 		if (meta_data->level_running) {
 			check_keyboard_input(&event, game_variables, meta_data);
 			handle_game_time(timer);
-			enemy_creation(timer, enemies, game_models, player);
+			enemy_creation(timer, enemies, game_models, player, effects, effect_models, game_models);
 			draw_background(display, static_models);
 			spell_timer(game_variables);
 			handle_casting(game_variables, player, effects, effect_models, game_models);
